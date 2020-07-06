@@ -4,29 +4,27 @@ from vkinder_db.init_db import create_all, VKinderUsers, VKinderSuggestions
 
 
 class VKinderDB:
-    engine = create_engine('postgresql+psycopg2://vkinder_db_user:test123@localhost/vkinder_db')
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    create_all(engine)
+    def __init__(self, db_name, db_user, db_user_pwd):
+        engine = create_engine('postgresql+psycopg2://%s:%s@localhost/%s' % (db_user, db_user_pwd, db_name))
+        Session = sessionmaker(bind=engine)
+        self.session = Session()
+        create_all(engine)
 
-    @staticmethod
-    def add_user(user):
+    def add_user(self, user):
         vkinder_user = VKinderUsers(name=user.name, age=user.age, sex=user.sex, city=user.city, status=user.status,
                                     vk_id=str(user))
-        VKinderDB.session.add(vkinder_user)
-        VKinderDB.session.commit()
+        self.session.add(vkinder_user)
+        self.session.commit()
         return vkinder_user.id
 
-    @staticmethod
-    def add_suggestion(**user):
+    def add_suggestion(self, **user):
         vkinder_pair = VKinderSuggestions(vk_id=user['vk_user'], photos_1=user['photos'][0], photos_2=user['photos'][1],
                                           photos_3=user['photos'][2])
-        VKinderDB.session.add(vkinder_pair)
-        VKinderDB.session.commit()
+        self.session.add(vkinder_pair)
+        self.session.commit()
 
-    @staticmethod
-    def get_existent_user(user):
-        result = VKinderDB.session.query(VKinderUsers).first()
+    def get_existent_user(self, user):
+        result = self.session.query(VKinderUsers).first()
         if result is not None:
             user.name = result.name
             user.age = result.age
@@ -36,6 +34,5 @@ class VKinderDB:
             return True
         return False
 
-    @staticmethod
-    def count_suggestions():
-        return VKinderDB.session.query(VKinderSuggestions).count()
+    def count_suggestions(self):
+        return self.session.query(VKinderSuggestions).count()

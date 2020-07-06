@@ -11,9 +11,6 @@ class Error(Exception):
     pass
 
 
-API_VK = None
-
-
 class VKinder:
     api_vk_url = 'https://api.vk.com/method/'
     vk_url = 'https://vk.com/'
@@ -49,9 +46,9 @@ class VKinder:
 
 
     @staticmethod
-    def app_enter():
+    def app_enter(api_id):
         try:
-            user_id, token = VKinder.get_access_token(API_VK)
+            user_id, token = VKinder.get_access_token(api_id)
         except Error as e:
             print(e)
             return
