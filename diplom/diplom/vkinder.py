@@ -39,7 +39,7 @@ class VKinder:
         params['age_to'] = self.user.age + 1
         params['status'] = self.user.status
 
-        resp = VKinder.execute(self.user.id, self.user.token, 'users.search', params)
+        resp = VKinder.execute(self.user.vk_id, self.user.token, 'users.search', params)
         users_list = resp.json()['response']['items']
 
         return users_list
@@ -83,6 +83,7 @@ class VKinder:
                 user_id = user_id_re.search(url).group(0)[8:]
             except Exception:
                 raise Error(f'Не удалось извлечь ID пользователя из предоставленного URL.')
+                return
 
             return user_id, token
 

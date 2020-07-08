@@ -28,8 +28,9 @@ class VKinderUsers(Base):
 class VKinderSuggestions(Base):
     __tablename__ = 'vkinder_suggestion'
 
-    partner_id = Column(Integer, primary_key=True)
-    vk_id = Column(String(250), nullable=False)
+    suggestion_id = Column(Integer, primary_key=True)
+    user_id = Column(String(250), nullable=False)
+    partner_vk_id = Column(String(250), nullable=False)
 
     photos_1 = Column(String(250))
     photos_2 = Column(String(250))

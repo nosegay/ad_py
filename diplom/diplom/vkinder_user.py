@@ -18,7 +18,7 @@ class VKinderUser:
         self.city = city
         self.status = status
         if isinstance(user_id, int) or isinstance(user_id, str) and user_id.isdigit():
-            self.id = user_id
+            self.vk_id = user_id
         else:
             self.get_id(user_id)
         self.photos = None
@@ -29,14 +29,14 @@ class VKinderUser:
 
         resp = VKinder.execute(name, self.token, 'users.get', params)
 
-        self.id = resp.json()['response'][0]['id']
+        self.vk_id = resp.json()['response'][0]['vk_id']
 
     def get_extended_info(self):
         params = deepcopy(VKinder.params)
         params['fields'] = ','.join(['bdate', 'sex', 'city', 'relation'])
-        params['user_ids'] = self.id
+        params['user_ids'] = self.vk_id
 
-        resp = VKinder.execute(self.id, self.token, 'users.get', params)
+        resp = VKinder.execute(self.vk_id, self.token, 'users.get', params)
         unknown_fields = False
 
         self.name = f"{resp.json()['response'][0]['first_name']} {resp.json()['response'][0]['last_name']}"
@@ -52,7 +52,7 @@ class VKinderUser:
             self.sex = resp.json()['response'][0]['sex']
 
         try:
-            self.city = resp.json()['response'][0]['city']['id']
+            self.city = resp.json()['response'][0]['city']['vk_id']
         except KeyError:
             unknown_fields = True
 
@@ -90,7 +90,7 @@ class VKinderUser:
                 params['q'] = city
                 params['count'] = '1'
                 try:
-                    resp = VKinder.execute(self.id, self.token, 'database.getCities', params)
+                    resp = VKinder.execute(self.vk_id, self.token, 'database.getCities', params)
                     self.city = resp.json()['response']['items'][0]['id']
                     break
                 except:
@@ -111,13 +111,13 @@ class VKinderUser:
 
     def get_photos(self):
         params = deepcopy(VKinder.params)
-        params['owner_id'] = self.id
+        params['owner_id'] = self.vk_id
         params['album_id'] = 'profile'
         params['extended'] = '1'
         params['photo_sizes'] = '1'
 
         try:
-            resp = VKinder.execute(self.id, self.token, 'photos.get', params)
+            resp = VKinder.execute(self.vk_id, self.token, 'photos.get', params)
         except Error as e:
             return -1
         photo_list = resp.json()['response']['items']
@@ -132,4 +132,4 @@ class VKinderUser:
         return dict(vk_user=str(self), photos=list(self.photos))
 
     def __str__(self):
-        return f'https://vk.com/id{self.id}'
+        return f'https://vk.com/id{self.vk_id}'

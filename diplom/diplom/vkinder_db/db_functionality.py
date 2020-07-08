@@ -17,14 +17,14 @@ class VKinderDB:
         self.session.commit()
         return vkinder_user.id
 
-    def add_suggestion(self, **user):
-        vkinder_pair = VKinderSuggestions(vk_id=user['vk_user'], photos_1=user['photos'][0], photos_2=user['photos'][1],
-                                          photos_3=user['photos'][2])
+    def add_suggestion(self, main_id, **user):
+        vkinder_pair = VKinderSuggestions(user_id=main_id, partner_vk_id=user['vk_user'], photos_1=user['photos'][0],
+                                          photos_2=user['photos'][1], photos_3=user['photos'][2])
         self.session.add(vkinder_pair)
         self.session.commit()
 
     def get_existent_user(self, user):
-        result = self.session.query(VKinderUsers).first()
+        result = self.session.query(VKinderUsers).filter(VKinderUsers.vk_id == str(user)).first()
         if result is not None:
             user.name = result.name
             user.age = result.age
@@ -34,5 +34,5 @@ class VKinderDB:
             return True
         return False
 
-    def count_suggestions(self):
-        return self.session.query(VKinderSuggestions).count()
+    def count_suggestions(self, user_id):
+        return self.session.query(VKinderSuggestions).filter(VKinderSuggestions.user_id == user_id).count()
